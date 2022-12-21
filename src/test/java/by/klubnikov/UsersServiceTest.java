@@ -1,5 +1,6 @@
 package by.klubnikov;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
@@ -21,28 +22,32 @@ public class UsersServiceTest {
 
     private UsersService usersService = null;
 
+    @BeforeEach
+    public void initializeUsersService() {
+        usersService = new UsersService(new ArrayList<>());
+    }
+
     @Test
     void testIsBirthdayWithNullableUser() {
-        CustomFieldException exception = assertThrows(CustomFieldException.class, () -> {
-            usersService.isBirthDay(null, VALID_BIRTHDAY_DATE);
-        });
+        CustomFieldException exception = assertThrows(CustomFieldException.class, () ->
+                usersService.isBirthDay(null, VALID_BIRTHDAY_DATE));
         assertEquals(NULLABLE_BIRTHDAY_OR_USER_ERROR_MESSAGE, exception.getMessage());
     }
 
     @Test
     void testIsBirthdayWithUsersNullableBirthday() {
         Users nullDateUser = new Users(VALID_NAME, null);
-        CustomFieldException exception = assertThrows(CustomFieldException.class, () -> {
-            usersService.isBirthDay(nullDateUser, VALID_BIRTHDAY_DATE);
-        });
+        CustomFieldException exception = assertThrows(CustomFieldException.class, () ->
+                usersService.isBirthDay(nullDateUser, VALID_BIRTHDAY_DATE));
+
         assertEquals(NULLABLE_BIRTHDAY_OR_USER_ERROR_MESSAGE, exception.getMessage());
     }
 
     @Test
     void testIsBirthdayWithNullableDate() {
-        CustomFieldException exception = assertThrows(CustomFieldException.class, () -> {
-            usersService.isBirthDay(VALID_USER, null);
-        });
+        CustomFieldException exception = assertThrows(CustomFieldException.class, () -> 
+            usersService.isBirthDay(VALID_USER, null));
+
         assertEquals(NULLABLE_DATE_ERROR_MESSAGE, exception.getMessage());
     }
 
@@ -78,8 +83,14 @@ public class UsersServiceTest {
     }
 
     @Test
+    void testCreateNewUser() throws Exception {
+        usersService.createNewUser(VALID_NAME, VALID_BIRTHDAY_DATE);
+        assertEquals(1, usersService.getUsers().size());
+        assertTrue(usersService.getUsers().contains(VALID_USER));
+    }
+
+    @Test
     void testRemoveUser() throws Exception {
-        usersService = new UsersService(new ArrayList<>());
         usersService.createNewUser(VALID_NAME, VALID_BIRTHDAY_DATE);
         usersService.createNewUser(ANOTHER_NAME, ANOTHER_DATE);
         usersService.removeUser(VALID_NAME);
